@@ -14,8 +14,7 @@ def prep_data():
 		for f in list_files(directory):
 			image = cv2.imread(directory+'/'+f)
 			image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-			images.append(image_gray)
+			images.append(image_gray.flatten())
 			labels.append(int_to_label(i))
 			cv2.waitKey()
 	return images, labels
@@ -38,11 +37,12 @@ def label_to_int(label):
 
 def label_to_alphanum(label):
 	return int_to_alphanum(label_to_int(label))
+	
 if __name__ == '__main__':
 	print("Preparing Data...")
 	images, labels = prep_data()
 	print("Data Prepared...")
 	for i in range(0, len(images)):
-		cv2.imshow("Display", images[i])
+		cv2.imshow("Display", images[i].reshape((128,128)))
 		print(label_to_alphanum(labels[i]))
 		cv2.waitKey()
