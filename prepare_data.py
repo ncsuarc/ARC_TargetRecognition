@@ -16,7 +16,6 @@ def prep_data():
 			image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 			images.append(image_gray.flatten())
 			labels.append(int_to_label(i))
-			cv2.waitKey()
 	return images, labels
 
 def int_to_alphanum(num):
