@@ -10,7 +10,7 @@ batch_size = 36
 #Hyper params
 learning_rate = 0.001
 batch_size = 4
-display_step = 10
+display_step = 500
 
 #Graph params
 n_input = 16384 # 128*128 Images
