@@ -2,11 +2,17 @@ import tensorflow as tf
 
 import prepare_data
 
+<<<<<<< HEAD
 import random
 
 #Hyper params
 learning_rate = 0.001
 batch_size = 36
+=======
+#Hyper params
+learning_rate = 0.001
+batch_size = 4
+>>>>>>> ebc9b8de2b0b45bbd66e93b4dd28fc1f61086afd
 display_step = 10
 
 #Graph params
