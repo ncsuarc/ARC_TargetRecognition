@@ -63,7 +63,7 @@ def conv_net(x, dropout):
 	fc1_weight = weight_variable([8*8*256, 2048])
 	fc1_bias   = weight_variable([2048])
 
-	h_pool3_flat = tf.reshape(h_pool3, [-1, fc1_weight.get_shape().as_list()[0]])
+	h_pool3_flat = tf.reshape(h_pool4, [-1, fc1_weight.get_shape().as_list()[0]])
 	h_fc1 = tf.nn.relu(tf.add(tf.matmul(h_pool3_flat, fc1_weight), fc1_bias))
 	# Apply Dropout
 	h_fc1_drop = tf.nn.dropout(h_fc1, dropout)
