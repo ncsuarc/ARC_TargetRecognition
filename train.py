@@ -7,9 +7,6 @@ import random
 #Hyper params
 learning_rate = 0.001
 batch_size = 36
-#Hyper params
-learning_rate = 0.001
-batch_size = 4
 display_step = 500
 
 #Graph params
