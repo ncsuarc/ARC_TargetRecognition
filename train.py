@@ -53,14 +53,14 @@ def conv_net(x, dropout):
 	#Reshape input image
 	x_image = tf.reshape(x, shape=[-1, 128, 128, 1])
 
-	#2 convolutional layers
+	#4 convolutional layers
 	_, _, _, h_pool1 = network_layer(x_image, 1, 32)
 	_, _, _, h_pool2 = network_layer(h_pool1, 32, 64)
 	_, _, _, h_pool3 = network_layer(h_pool2, 64, 128)
-
+	_, _, _, h_pool4 = network_layer(h_pool3, 128, 256)
 	# Fully connected layer
 	# Reshape conv2 output to fit fully connected layer input
-	fc1_weight = weight_variable([16*16*128, 2048])
+	fc1_weight = weight_variable([8*8*256, 2048])
 	fc1_bias   = weight_variable([2048])
 
 	h_pool3_flat = tf.reshape(h_pool3, [-1, fc1_weight.get_shape().as_list()[0]])
@@ -98,10 +98,10 @@ with tf.Session() as sess:
 		sess.run(init)
 		# Keep training until reach max iterations
 		images, labels = prepare_data.prep_data()
-		step = 1
+		step = 0
 		while step * batch_size < len(images):
-			batch_x = images[(step-1)*batch_size:step*batch_size:1016] #Take one image from every character
-			batch_y = labels[(step-1)*batch_size:step*batch_size:1016]
+			batch_x = images[step::1016] #Take one image from every character
+			batch_y = labels[step::1016]
 			# Run optimization op (backprop)
 			sess.run(optimizer, feed_dict={x: batch_x, y: batch_y, keep_prob: dropout})
 			if step % display_step == 0:
@@ -119,9 +119,9 @@ with tf.Session() as sess:
 
 		# Calculate accuracy for 2 random batches
 		random.seed()
-		step = random.randint(0, 1016)
+		step = random.randint(0, 508)
 		
 		print("Testing Accuracy:", \
-			sess.run(accuracy, feed_dict={x: images[(step-2)*batch_size:step*2*batch_size:1016],
-										  y: labels[(step-2)*batch_size:step*2*batch_size:1016],
+			sess.run(accuracy, feed_dict={x: images[step::508],
+										  y: labels[step::508],
 										  keep_prob: 1.}))

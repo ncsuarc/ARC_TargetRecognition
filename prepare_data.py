@@ -41,7 +41,11 @@ if __name__ == '__main__':
 	print("Preparing Data...")
 	images, labels = prep_data()
 	print("Data Prepared...")
-	for i in range(0, len(images)):
-		cv2.imshow("Display", images[i].reshape((128,128)))
-		print(label_to_alphanum(labels[i]))
-		cv2.waitKey()
+	step = 0
+	batch_size = 36
+	while step * batch_size < len(images):
+		batch_x = images[step::1016] #Take one image from every character
+		for img in batch_x:
+			cv2.imshow("Display", img.reshape((128,128)))
+			cv2.waitKey()
+		step += 1
