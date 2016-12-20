@@ -7,7 +7,7 @@ import random
 #Hyper params
 learning_rate = 0.001
 batch_size = 36
-display_step = 500
+display_step = 100
 
 #Graph params
 n_input = 16384 # 128*128 Images
@@ -109,7 +109,6 @@ with tf.Session() as sess:
 				loss, acc = sess.run([cost, accuracy], feed_dict={x: batch_x, y: batch_y, keep_prob: 1.})
 				# Save the variables to disk.
 				save_path = saver.save(sess, "model.ckpt")
-				saver.export_meta_graph('model.meta')
 
 				print("Checkpoint saved in file: %s" % save_path)
 				print("Iter " + str(step*batch_size) + ", Minibatch Loss= " + \
