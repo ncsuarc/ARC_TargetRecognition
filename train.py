@@ -90,7 +90,7 @@ accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 init = tf.initialize_all_variables()
 
 #For saving trained Neural Net for later
-saver = tf.train.Saver()
+saver = tf.train.Saver(tf.trainable_variables(), write_version=tf.train.SaverDef.V1)
 
 # Launch the graph
 with tf.Session() as sess:
@@ -107,15 +107,17 @@ with tf.Session() as sess:
 			if step % display_step == 0:
 				# Calculate batch loss and accuracy
 				loss, acc = sess.run([cost, accuracy], feed_dict={x: batch_x, y: batch_y, keep_prob: 1.})
+				# Save the variables to disk.
+				save_path = saver.save(sess, "model.ckpt")
+				saver.export_meta_graph('model.meta')
+
+				print("Checkpoint saved in file: %s" % save_path)
 				print("Iter " + str(step*batch_size) + ", Minibatch Loss= " + \
 					  "{:.6f}".format(loss) + ", Training Accuracy= " + \
 					  "{:.5f}".format(acc))
 			step += 1
 		print("Optimization Finished!")
 
-		# Save the variables to disk.
-		save_path = saver.save(sess, "model.ckpt")
-		print("Model saved in file: %s" % save_path)
 
 		# Calculate accuracy for 2 random batches
 		random.seed()
