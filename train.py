@@ -52,24 +52,24 @@ def conv_net(x, dropout):
 	x_image = tf.reshape(x, shape=[-1, 128, 128, 1])
 
 	#2 convolutional layers, 1 pooling layer
-	h_conv1 = conv_layer(x_image, 1, 64)
-	h_conv2 = conv_layer(h_conv1, 64, 128)
+	h_conv1 = conv_layer(x_image, 1, 32)
+	h_conv2 = conv_layer(h_conv1, 32, 64)
 
-	h_pool2 = max_pool2d(h_conv2)
+	h_pool1 = max_pool2d(h_conv2)
 
 	#2 convolutional layers, 1 pooling layer
-	h_conv3 = conv_layer(h_pool2, 128, 256)
-	h_conv4 = conv_layer(h_conv3, 256, 512)
+	h_conv3 = conv_layer(h_pool1, 64, 64)
+	h_conv4 = conv_layer(h_conv3, 64, 64)
 
-	h_pool4 = max_pool2d(h_conv4)
+	h_pool2 = max_pool2d(h_conv4)
 
 	# Fully connected layer
-	# Reshape conv2 output to fit fully connected layer input
-	fc1_weight = weight_variable([8*8*512, 2048])
+	fc1_weight = weight_variable([32*32*64, 2048])
 	fc1_bias   = weight_variable([2048])
 
-	h_pool4_flat = tf.reshape(h_pool4, [-1, fc1_weight.get_shape().as_list()[0]])
-	h_fc1 = tf.nn.relu(tf.add(tf.matmul(h_pool4_flat, fc1_weight), fc1_bias))
+	# Reshape pooling output to fit fully connected layer input
+	h_pool3_flat = tf.reshape(h_pool2, [-1, fc1_weight.get_shape().as_list()[0]])
+	h_fc1 = tf.nn.relu(tf.add(tf.matmul(h_pool3_flat, fc1_weight), fc1_bias))
 	# Apply Dropout
 	h_fc1_drop = tf.nn.dropout(h_fc1, dropout)
 
