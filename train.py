@@ -39,32 +39,37 @@ def bias_variable(shape):
 	initial = tf.constant(0.1, shape=shape)
 	return tf.Variable(initial)
 
-def network_layer(input, input_size, output_size):
+def conv_layer(input, input_size, output_size):
 	conv_weight = weight_variable([5, 5, input_size, output_size])
 	conv_bias = bias_variable([output_size])
 
 	h_conv = conv2d(input, conv_weight, conv_bias)
-	h_pool = max_pool2d(h_conv)
-
-	return conv_weight, conv_bias, h_conv, h_pool
+	return h_conv
 
 #Create model
 def conv_net(x, dropout):
 	#Reshape input image
 	x_image = tf.reshape(x, shape=[-1, 128, 128, 1])
 
-	#4 convolutional layers
-	_, _, _, h_pool1 = network_layer(x_image, 1, 32)
-	_, _, _, h_pool2 = network_layer(h_pool1, 32, 64)
-	_, _, _, h_pool3 = network_layer(h_pool2, 64, 128)
-	_, _, _, h_pool4 = network_layer(h_pool3, 128, 256)
+	#2 convolutional layers, 1 pooling layer
+	h_conv1 = conv_layer(x_image, 1, 64)
+	h_conv2 = conv_layer(h_conv1, 64, 128)
+
+	h_pool2 = max_pool2d(h_conv2)
+
+	#2 convolutional layers, 1 pooling layer
+	h_conv3 = conv_layer(h_pool2, 128, 256)
+	h_conv4 = conv_layer(h_conv3, 256, 512)
+
+	h_pool4 = max_pool2d(h_conv4)
+
 	# Fully connected layer
 	# Reshape conv2 output to fit fully connected layer input
-	fc1_weight = weight_variable([8*8*256, 2048])
+	fc1_weight = weight_variable([8*8*512, 2048])
 	fc1_bias   = weight_variable([2048])
 
-	h_pool3_flat = tf.reshape(h_pool4, [-1, fc1_weight.get_shape().as_list()[0]])
-	h_fc1 = tf.nn.relu(tf.add(tf.matmul(h_pool3_flat, fc1_weight), fc1_bias))
+	h_pool4_flat = tf.reshape(h_pool4, [-1, fc1_weight.get_shape().as_list()[0]])
+	h_fc1 = tf.nn.relu(tf.add(tf.matmul(h_pool4_flat, fc1_weight), fc1_bias))
 	# Apply Dropout
 	h_fc1_drop = tf.nn.dropout(h_fc1, dropout)
 
@@ -90,7 +95,7 @@ accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 init = tf.initialize_all_variables()
 
 #For saving trained Neural Net for later
-saver = tf.train.Saver(tf.trainable_variables(), write_version=tf.train.SaverDef.V1)
+saver = tf.train.Saver(tf.trainable_variables(),  write_version=tf.train.SaverDef.V1)
 
 # Launch the graph
 with tf.Session() as sess:
