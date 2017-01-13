@@ -9,13 +9,15 @@ def list_files(startpath):
 def prep_data():
 	images = []
 	labels = []
-	for i in range(1, 37): #Iterate through samples 1 to 37
-		directory = "samples/Sample{:03d}".format(i)
-		for f in list_files(directory):
-			image = cv2.imread(directory+'/'+f)
-			image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-			images.append(image_gray.flatten())
-			labels.append(int_to_label(i))
+	f = open("imgpath_label.txt", 'r')
+	filenames = []
+	labels = []
+	for line in f:
+		filename, label = line[:-1].split(' ')
+		image = cv2.imread("samples/" + filename)
+		image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+		images.append(image_gray.flatten())
+		labels.append(int_to_label(i))
 	return images, labels
 
 def int_to_alphanum(num):
@@ -27,7 +29,7 @@ def int_to_alphanum(num):
 		return chr(num+54)
 
 def int_to_label(num):
-	label = [0] * 36
+	label = [0] * 13
 	label[num-1] = 1
 	return label
 
