@@ -6,12 +6,12 @@ import random
 
 #Hyper params
 learning_rate = 0.001
-batch_size = 36
+batch_size = 10
 display_step = 100
 
 #Graph params
-n_input = 16384 # 128*128 Images
-n_classes = 36 # Output Classes (0-9 & A-Z)
+n_input = 3600 # 128*128 Images
+n_classes = 13 # Output Classes (0-9 & A-Z)
 dropout = 0.75 # Keep Probability
 
 #Graph input
@@ -49,7 +49,7 @@ def conv_layer(input, input_size, output_size):
 #Create model
 def conv_net(x, dropout):
 	#Reshape input image
-	x_image = tf.reshape(x, shape=[-1, 128, 128, 1])
+	x_image = tf.reshape(x, shape=[-1, 60, 60, 1])
 
 	#2 convolutional layers, 1 pooling layer
 	h_conv1 = conv_layer(x_image, 1, 32)
@@ -64,7 +64,7 @@ def conv_net(x, dropout):
 	h_pool2 = max_pool2d(h_conv4)
 
 	# Fully connected layer
-	fc1_weight = weight_variable([32*32*64, 2048])
+	fc1_weight = weight_variable([15*15*64, 2048])
 	fc1_bias   = weight_variable([2048])
 
 	# Reshape pooling output to fit fully connected layer input
@@ -105,8 +105,8 @@ with tf.Session() as sess:
 		images, labels = prepare_data.prep_data()
 		step = 0
 		while step * batch_size < len(images):
-			batch_x = images[step::1016] #Take one image from every character
-			batch_y = labels[step::1016]
+			batch_x = images[step*batch_size:(step+1)*batch_size] #Take one image from every character
+			batch_y = labels[step*batch_size:(step+1)*batch_size]
 			# Run optimization op (backprop)
 			sess.run(optimizer, feed_dict={x: batch_x, y: batch_y, keep_prob: dropout})
 			if step % display_step == 0:
