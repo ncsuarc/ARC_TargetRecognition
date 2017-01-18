@@ -21,8 +21,6 @@ def prep_data():
         return images, labels
 
 def int_to_alphanum(num):
-        #Integers 0-9 are 1-10
-        #Characters A-Z are 11-54
         if num <= 10:
                 return "{}".format(num-1)
         else:
@@ -30,7 +28,7 @@ def int_to_alphanum(num):
 
 def int_to_label(num):
         label = [0] * 13
-        label[num-1] = 1
+        label[num] = 1
         return label
 
 def label_to_int(label):

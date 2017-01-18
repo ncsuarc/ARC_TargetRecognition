@@ -95,8 +95,7 @@ accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 init = tf.initialize_all_variables()
 
 #For saving trained Neural Net for later
-saver = tf.train.Saver(tf.trainable_variables(),  write_version=tf.train.SaverDef.V1)
-
+saver = tf.train.Saver(tf.trainable_variables())
 # Launch the graph
 with tf.Session() as sess:
 	with tf.device('/cpu:0'):
