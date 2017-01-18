@@ -6,7 +6,8 @@ class Model:
         self.n_classes = n_classes
         self.dropout = dropout
         self.x = tf.placeholder(tf.float32, [None, n_input])
-        self.y = tf.placeholder(tf.float32, [None, n_classes])
+        self.y = tf.placeholder(tf.uint8, [None])
+        self.y_one_hot = tf.one_hot(self.y, n_classes)
         self.keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
         self.predictor = self.conv_net()
     

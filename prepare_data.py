@@ -17,7 +17,7 @@ def prep_data():
                 image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                 mask = cv2.inRange(image_gray, 1, 255)
                 images.append(mask.flatten())
-                labels.append(int_to_label(int(label)))
+                labels.append(int(label))
         return images, labels
 
 def int_to_shape(num):
@@ -35,12 +35,8 @@ def int_to_shape(num):
             11:'octagon',
             12:'star',
             13:'cross'
-    }.get(num, -1)
+    }.get(num+1, -1)
 
-def int_to_label(num):
-        label = [0] * 13
-        label[num] = 1
-        return label
 
 def label_to_int(label):
         return np.argmax(label)

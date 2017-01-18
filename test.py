@@ -32,24 +32,19 @@ with tf.Session() as sess:
         with tf.device('/cpu:0'):
                 sess.run(init)
                 # Restore variables from disk.
-                ckpt = tf.train.get_checkpoint_state('./')
-                if ckpt and tf.gfile.Exists(ckpt.model_checkpoint_path):
-                    print("Reading model parameters from %s" % ckpt.model_checkpoint_path)
-                    saver.restore(sess, ckpt.model_checkpoint_path)
-                else:
-                    print("Created model with fresh parameters.")
-                    sess.run(init)
+                ckpt = tf.train.get_checkpoint_state('./training')
+                print("Reading model parameters from %s" % ckpt.model_checkpoint_path)
+                saver.restore(sess, ckpt.model_checkpoint_path)
 
-                print("Model restored.")
-                # Keep training until reach max iterations
-                images, _ = prepare_data.prep_data()
+                images, labels = prepare_data.prep_data()
                 step = 0
                 while step * batch_size < len(images):
                         batch_x = images[step*batch_size:(step+1)*batch_size]
+                        batch_y = labels[step*batch_size:(step+1)*batch_size]
                         # Run optimization op (backprop)
                         pred_labels = sess.run(pred, feed_dict={x: batch_x})
-                        for i in range(0, len(batch_x)):
-                                cv2.imshow("Display", batch_x[i].reshape((60,60)))
-                                print(prepare_data.label_to_shape(pred_labels[i]))
+                        for (img,predicted,actual) in zip(batch_x, pred_labels, batch_y):
+                                cv2.imshow("Display", img.reshape((60,60)))
+                                print("%s : %s ::: %s" % (prepare_data.label_to_int(predicted), actual, prepare_data.label_to_shape(predicted)))
                                 cv2.waitKey()
                         step += 1
