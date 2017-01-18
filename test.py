@@ -4,12 +4,12 @@ import cv2
 import prepare_data
 
 #Hyper params
-batch_size = 36
-display_step = 500
+batch_size = 100
+display_step = 1000
 
 #Graph params
-n_input = 16384 # 128*128 Images
-n_classes = 36 # Output Classes (0-9 & A-Z)
+n_input = 3600 # 60*60 Images
+n_classes = 13 # Output Classes (13 shapes)
 
 #Graph input
 x = tf.placeholder(tf.float32, [None, n_input])
@@ -46,20 +46,18 @@ def network_layer(input, input_size, output_size):
 #Create model
 def conv_net(x):
 	#Reshape input image
-	x_image = tf.reshape(x, shape=[-1, 128, 128, 1])
+	x_image = tf.reshape(x, shape=[-1, 60, 60, 1])
 
 	#4 convolutional layers
 	_, _, _, h_pool1 = network_layer(x_image, 1, 32)
 	_, _, _, h_pool2 = network_layer(h_pool1, 32, 64)
-	_, _, _, h_pool3 = network_layer(h_pool2, 64, 128)
-	_, _, _, h_pool4 = network_layer(h_pool3, 128, 256)
 	# Fully connected layer
 	# Reshape conv2 output to fit fully connected layer input
-	fc1_weight = weight_variable([8*8*256, 2048])
+	fc1_weight = weight_variable([15*15*64, 2048])
 	fc1_bias   = weight_variable([2048])
 
-	h_pool3_flat = tf.reshape(h_pool4, [-1, fc1_weight.get_shape().as_list()[0]])
-	h_fc1 = tf.nn.relu(tf.add(tf.matmul(h_pool3_flat, fc1_weight), fc1_bias))
+	h_pool2_flat = tf.reshape(h_pool2, [-1, fc1_weight.get_shape().as_list()[0]])
+	h_fc1 = tf.nn.relu(tf.add(tf.matmul(h_pool2_flat, fc1_weight), fc1_bias))
 
 	fc2_weight = weight_variable([2048, n_classes])
 	fc2_bias   = weight_variable([n_classes])
