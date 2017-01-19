@@ -12,7 +12,7 @@ display_step = 5
 
 #Graph params
 n_input = 3600 # 60x60 Images
-n_classes = 13 # Output Classes 
+n_classes = 36 # Output Classes
 dropout = 0.75 # Keep Probability
 
 # Construct model
@@ -37,38 +37,35 @@ init = tf.initialize_all_variables()
 saver = tf.train.Saver(tf.trainable_variables())
 # Launch the graph
 with tf.Session() as sess:
-        with tf.device('/cpu:0'):
-                sess.run(init)
-                # Keep training until reach max iterations
-                images, labels = prepare_data.prep_data()
-                step = 0
-                while step * batch_size < len(images):
-                        batch_x = images[step*batch_size:(step+1)*batch_size] #Take one image from every character
-                        batch_y = labels[step*batch_size:(step+1)*batch_size]
-                        # Run optimization op (backprop)
-                        sess.run(optimizer, feed_dict={x: batch_x, y: batch_y, keep_prob: dropout})
-                        if step % display_step == 0:
-                                # Calculate batch loss and accuracy
-                                loss, acc, pred_y = sess.run([cost, accuracy, pred], feed_dict={x: batch_x, y: batch_y, keep_prob: 1.})
-                                
-                                for predicted, actual in zip(pred_y, batch_y):
-                                    print("%s : %s" % (predicted, actual))
-                                # Save the variables to disk.
-                                save_path = saver.save(sess, "training/model", global_step=step)
+	sess.run(init)
+	# Keep training until reach max iterations
+	images, labels = prepare_data.prep_data()
+	step = 0
+	while step * batch_size < len(images):
+	        batch_x = images[step*batch_size:(step+1)*batch_size] #Take one image from every character
+	        batch_y = labels[step*batch_size:(step+1)*batch_size]
+	        # Run optimization op (backprop)
+	        sess.run(optimizer, feed_dict={x: batch_x, y: batch_y, keep_prob: dropout})
+	        if step % display_step == 0:
+	                # Calculate batch loss and accuracy
+	                loss, acc, pred_y = sess.run([cost, accuracy, pred], feed_dict={x: batch_x, y: batch_y, keep_prob: 1.})
 
-                                print("Checkpoint saved in file: %s" % save_path)
-                                print("Iter " + str(step*batch_size) + ", Minibatch Loss= " + \
-                                          "{:.6f}".format(loss) + ", Training Accuracy= " + \
-                                          "{:.5f}".format(acc))
-                        step += 1
-                print("Optimization Finished!")
+	                # Save the variables to disk.
+	                save_path = saver.save(sess, "training/model", global_step=step)
+
+	                print("Checkpoint saved in file: %s" % save_path)
+	                print("Iter " + str(step*batch_size) + ", Minibatch Loss= " + \
+	                          "{:.6f}".format(loss) + ", Training Accuracy= " + \
+	                          "{:.5f}".format(acc))
+	        step += 1
+	print("Optimization Finished!")
 
 
-                # Calculate accuracy for 2 random batches
-                random.seed()
-                step = random.randint(0, 508)
-                
-                print("Testing Accuracy:", \
-                        sess.run(accuracy, feed_dict={x: images[step::508],
-                                                                                  y: labels[step::508],
-                                                                                  keep_prob: 1.}))
+	# Calculate accuracy for 2 random batches
+	random.seed()
+	step = random.randint(0, 508)
+
+	print("Testing Accuracy:", \
+	        sess.run(accuracy, feed_dict={x: images[step::508],
+	                                                                  y: labels[step::508],
+	                                                                  keep_prob: 1.}))

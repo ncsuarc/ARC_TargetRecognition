@@ -11,7 +11,7 @@ display_step = 1000
 
 #Graph params
 n_input = 3600 # 60x60 Images
-n_classes = 13 # Output Classes 
+n_classes = 36 # Output Classes
 dropout = 0.75 # Keep Probability
 
 # Construct model
@@ -45,6 +45,6 @@ with tf.Session() as sess:
                         pred_labels = sess.run(pred, feed_dict={x: batch_x})
                         for (img,predicted,actual) in zip(batch_x, pred_labels, batch_y):
                                 cv2.imshow("Display", img.reshape((60,60)))
-                                print("%s : %s ::: %s" % (prepare_data.label_to_int(predicted), actual, prepare_data.label_to_shape(predicted)))
+                                print("%s ::: %s" % (prepare_data.label_to_alphanumeric(actual), prepare_data.label_to_alphanumeric(predicted)))
                                 cv2.waitKey()
                         step += 1
