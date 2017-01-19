@@ -22,13 +22,23 @@ def prep_data():
         return images, labels
 
 def label_to_alphanumeric(label):
-    maximum = np.argmax(label)
-    name = Target.num_to_alphanumeric(maximum)
+    if type(label) is np.ndarray:
+        num = np.argmax(label)
+    elif type(label) is int:
+        num = label
+    else:
+        raise TypeError('Only accepts np.ndarray or int')
+    name = Target.num_to_alphanumeric(num)
     return name
 
 def label_to_shape(label):
-    maximum = np.argmax(label)
-    name = Target.Shape(maximum).name
+    if type(label) is np.ndarray:
+        num = np.argmax(label)
+    elif type(label) is int:
+        num = label
+    else:
+        raise TypeError('Only accepts np.ndarray or int')
+    name = Target.Shape(num).name
     return name
 
 if __name__ == '__main__':
