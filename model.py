@@ -45,7 +45,7 @@ class Model:
         x_image = tf.reshape(self.x, shape=[-1, self.img_height, self.img_width, self.color_channels])
 
         #2 convolutional layers, 1 pooling layer
-        h_conv1 = conv_layer(x_image, 1, 32)
+        h_conv1 = conv_layer(x_image, self.color_channels, 32)
         h_conv2 = conv_layer(h_conv1, 32, 64)
 
         h_pool1 = max_pool2d(h_conv2)
