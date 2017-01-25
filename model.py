@@ -6,8 +6,10 @@ class Model:
         self.learning_rate = 0.001
         self.batch_size = 100
         self.display_step = 5
-
-        self.n_input = 60*60
+        self.img_height = 60
+        self.img_width = 60
+        self.color_channels = 1
+        self.n_input = self.img_height * self.img_width * self.color_channels
         self.n_classes = 36
         self.dropout = .75
         self.x = tf.placeholder(tf.float32, [None, self.n_input])
@@ -39,7 +41,7 @@ class Model:
 
     def conv_net(self):
         #Reshape input image
-        x_image = tf.reshape(self.x, shape=[-1, 60, 60, 1])
+        x_image = tf.reshape(self.x, shape=[-1, self.img_height, self.img_width, self.color_channels])
 
         #2 convolutional layers, 1 pooling layer
         h_conv1 = conv_layer(x_image, 1, 32)
