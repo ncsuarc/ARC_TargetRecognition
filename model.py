@@ -1,5 +1,6 @@
 import tensorflow as tf
 import os
+import Target
 
 class Model:
     def __init__(self, sess, load=True):
@@ -10,7 +11,7 @@ class Model:
         self.img_width = 60
         self.color_channels = 1
         self.n_input = self.img_height * self.img_width * self.color_channels
-        self.n_classes = 36
+        self.n_classes = len(Target.Alphanumeric)
         self.dropout = .75
         self.x = tf.placeholder(tf.float32, [None, self.n_input])
         self.y = tf.placeholder(tf.uint8, [None])
