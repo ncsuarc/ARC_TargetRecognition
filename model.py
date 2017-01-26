@@ -3,16 +3,17 @@ import os
 import Target
 
 class Model:
-    def __init__(self, sess, load=True):
-        self.learning_rate = 0.001
-        self.batch_size = 100
-        self.display_step = 5
-        self.img_height = 60
-        self.img_width = 60
-        self.color_channels = 1
+    def __init__(self, sess, learning_rate = 0.001, dropout = .75, batch_size = 100, display_step = 5, img_height = 60, img_width = 60, color_channels = 1, load=True):
+        self.learning_rate = learning_rate
+        self.dropout = dropout
+        self.batch_size = batch_size
+        self.display_step = display_step
+        self.img_height = img_height
+        self.img_width = img_width
+        self.color_channels = color_channels
+
         self.n_input = self.img_height * self.img_width * self.color_channels
         self.n_classes = len(Target.Alphanumeric)
-        self.dropout = .75
         self.x = tf.placeholder(tf.float32, [None, self.n_input])
         self.y = tf.placeholder(tf.uint8, [None])
         self.y_one_hot = tf.one_hot(self.y, self.n_classes)
@@ -56,8 +57,8 @@ class Model:
 
         h_pool2 = max_pool2d(h_conv4)
 
-        # Fully connected layer
-        fc1_weight = weight_variable([15*15*64, 2048])
+        # Fully connected layer       (height/4) * (width/4) * 64
+        fc1_weight = weight_variable([self.img_height*self.img_width*4, 2048])
         fc1_bias   = weight_variable([2048])
 
         # Reshape pooling output to fit fully connected layer input
