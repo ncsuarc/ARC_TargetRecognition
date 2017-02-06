@@ -15,8 +15,8 @@ with tf.Session() as sess:
     total = 0
     for (img, predicted, actual) in zip(images, pred_labels, labels):
         cv2.imshow("Display", img.reshape((cnn_model.img_height, cnn_model.img_width, cnn_model.color_channels)))
-        actual = prepare_data.label_to_alphanumeric(actual)
-        predicted = prepare_data.label_to_alphanumeric(predicted)
+        actual = prepare_data.label_to_shape(actual)
+        predicted = prepare_data.label_to_shape(predicted)
         total = total + 1
         if actual == predicted:
             correct = correct + 1

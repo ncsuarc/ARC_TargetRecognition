@@ -15,9 +15,9 @@ def prep_data():
         for line in f:
                 filename, label = line[:-1].split(' ')
                 image = cv2.imread(filename)
-                image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                mask = cv2.inRange(image_gray, 1, 255)
-                images.append(mask.flatten())
+#                image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+#                mask = cv2.inRange(image_gray, 1, 255)
+                images.append(image.flatten())
                 labels.append(int(label))
         return images, labels
 

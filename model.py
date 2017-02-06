@@ -3,7 +3,7 @@ import os
 import Target
 
 class Model:
-    def __init__(self, sess, learning_rate = 0.001, dropout = .75, batch_size = 100, display_step = 5, img_height = 60, img_width = 60, color_channels = 1, load=True):
+    def __init__(self, sess, learning_rate = 0.001, dropout = .75, batch_size = 500, display_step = 5, img_height = 60, img_width = 60, color_channels = 3, load=True):
         self.learning_rate = learning_rate
         self.dropout = dropout
         self.batch_size = batch_size
@@ -13,7 +13,7 @@ class Model:
         self.color_channels = color_channels
 
         self.n_input = self.img_height * self.img_width * self.color_channels
-        self.n_classes = len(Target.Alphanumeric)
+        self.n_classes = len(Target.Shape)
         self.x = tf.placeholder(tf.float32, [None, self.n_input])
         self.y = tf.placeholder(tf.uint8, [None])
         self.y_one_hot = tf.one_hot(self.y, self.n_classes)
