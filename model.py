@@ -10,7 +10,7 @@ class Model:
                 n_neurons = 2048,
                 learning_rate = 0.001,
                 dropout = .75,
-                batch_size = 500,
+                batch_size = 100,
                 display_step = 5,
                 img_height = 60,
                 img_width = 60,
@@ -73,7 +73,7 @@ class Model:
         h_pool2 = max_pool2d(h_conv4)
 
         # Fully connected layer       (height/4) * (width/4) * n_features2
-        fc1_weight = weight_variable([self.img_height*self.img_width*4, self.n_neurons])
+        fc1_weight = weight_variable([int(self.img_height* self.img_width *self.n_features2/16), self.n_neurons])
         fc1_bias   = weight_variable([self.n_neurons])
 
         # Reshape pooling output to fit fully connected layer input
