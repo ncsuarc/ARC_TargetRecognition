@@ -3,7 +3,22 @@ import os
 import Target
 
 class Model:
-    def __init__(self, sess, learning_rate = 0.001, dropout = .75, batch_size = 500, display_step = 5, img_height = 60, img_width = 60, color_channels = 3, load=True):
+    def __init__(self,
+                sess,
+                n_features1 = 32,
+                n_features2 = 64,
+                n_neurons = 2048,
+                learning_rate = 0.001,
+                dropout = .75,
+                batch_size = 500,
+                display_step = 5,
+                img_height = 60,
+                img_width = 60,
+                color_channels = 3,
+                load=True):
+        self.n_features1 = n_features1
+        self.n_features2 = n_features2
+        self.n_neurons = n_neurons
         self.learning_rate = learning_rate
         self.dropout = dropout
         self.batch_size = batch_size
@@ -46,20 +61,20 @@ class Model:
         x_image = tf.reshape(self.x, shape=[-1, self.img_height, self.img_width, self.color_channels])
 
         #2 convolutional layers, 1 pooling layer
-        h_conv1 = conv_layer(x_image, self.color_channels, 32)
-        h_conv2 = conv_layer(h_conv1, 32, 64)
+        h_conv1 = conv_layer(x_image, self.color_channels, self.n_features1)
+        h_conv2 = conv_layer(h_conv1, self.n_features1, self.n_features2)
 
         h_pool1 = max_pool2d(h_conv2)
 
         #2 convolutional layers, 1 pooling layer
-        h_conv3 = conv_layer(h_pool1, 64, 64)
-        h_conv4 = conv_layer(h_conv3, 64, 64)
+        h_conv3 = conv_layer(h_pool1, self.n_features2, self.n_features2)
+        h_conv4 = conv_layer(h_conv3, self.n_features2, self.n_features2)
 
         h_pool2 = max_pool2d(h_conv4)
 
-        # Fully connected layer       (height/4) * (width/4) * 64
-        fc1_weight = weight_variable([self.img_height*self.img_width*4, 2048])
-        fc1_bias   = weight_variable([2048])
+        # Fully connected layer       (height/4) * (width/4) * n_features2
+        fc1_weight = weight_variable([self.img_height*self.img_width*4, self.n_neurons])
+        fc1_bias   = weight_variable([self.n_neurons])
 
         # Reshape pooling output to fit fully connected layer input
         h_pool3_flat = tf.reshape(h_pool2, [-1, fc1_weight.get_shape().as_list()[0]])
@@ -67,7 +82,7 @@ class Model:
         # Apply Dropout
         h_fc1_drop = tf.nn.dropout(h_fc1, self.dropout)
 
-        fc2_weight = weight_variable([2048, self.n_classes])
+        fc2_weight = weight_variable([self.n_neurons, self.n_classes])
         fc2_bias   = weight_variable([self.n_classes])
 
         # Output, class prediction
