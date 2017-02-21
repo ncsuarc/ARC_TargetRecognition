@@ -15,6 +15,7 @@ class Model:
                 img_height = 60,
                 img_width = 60,
                 color_channels = 3,
+                n_classes = 13,
                 load=True):
         self.n_features1 = n_features1
         self.n_features2 = n_features2
@@ -28,34 +29,61 @@ class Model:
         self.color_channels = color_channels
 
         self.n_input = self.img_height * self.img_width * self.color_channels
-        self.n_classes = len(Target.Shape)
-        self.x = tf.placeholder(tf.float32, [None, self.n_input])
-        self.y = tf.placeholder(tf.uint8, [None])
-        self.y_one_hot = tf.one_hot(self.y, self.n_classes)
-        self.keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
-
-        self.predictor = self.conv_net()
-
-        self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(self.predictor, self.y_one_hot))
-        self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.cost)
-
-        self.correct_pred = tf.equal(tf.argmax(self.predictor, 1), tf.argmax(self.y_one_hot, 1))
-        self.accuracy = tf.reduce_mean(tf.cast(self.correct_pred, tf.float32))
-
-        self.saver = tf.train.Saver(tf.trainable_variables())
+        self.n_classes = n_classes
+        
         if load:
             try:
                 path = os.path.dirname(os.path.realpath(__file__)) + '/training'
                 ckpt = tf.train.get_checkpoint_state(path)
                 print("Reading saved model parameters from %s" % ckpt.model_checkpoint_path)
+                self.saver = tf.train.import_meta_graph(ckpt.model_checkpoint_path + '.meta')
                 self.saver.restore(sess, ckpt.model_checkpoint_path)
             except Exception as e:
-                print("Creating a new model.")
-                sess.run(tf.global_variables_initializer())
+                self.create_network(sess)
+            self.x = tf.get_collection("x")[0]
+            self.y = tf.get_collection("y")[0]
+            self.keep_prob = tf.get_collection("kp")[0]
+            self.predictor = tf.get_collection("predictor")[0]
+            self.cost = tf.get_collection("cost")[0]
+            self.global_step = tf.get_collection("step")[0]
+            self.optimizer = tf.get_collection("optimizer")[0]
+            self.accuracy = tf.get_collection("accuracy")[0]
         else:
-            print("Creating a new model.")
-            sess.run(tf.global_variables_initializer())
+            self.create_network(sess)
 
+    def create_network(self, sess):
+        self.x = tf.placeholder(tf.float32, [None, self.n_input])
+        tf.add_to_collection("x", self.x)
+
+        self.y = tf.placeholder(tf.uint8, [None])
+        tf.add_to_collection("y", self.y)
+
+        self.y_one_hot = tf.one_hot(self.y, self.n_classes)
+        
+        self.keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
+        tf.add_to_collection("kp", self.keep_prob)
+
+        self.predictor = self.conv_net()
+        tf.add_to_collection("predictor", self.predictor)
+
+        self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.predictor, labels=self.y_one_hot))
+        tf.add_to_collection("cost", self.cost)
+        
+        self.global_step = tf.Variable(0, name='global_step', trainable=False) 
+        tf.add_to_collection("step", self.global_step)
+
+        self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.cost, global_step=self.global_step)
+        tf.add_to_collection("optimizer", self.optimizer)
+
+        self.correct_pred = tf.equal(tf.argmax(self.predictor, 1), tf.argmax(self.y_one_hot, 1))
+        self.accuracy = tf.reduce_mean(tf.cast(self.correct_pred, tf.float32))
+        tf.add_to_collection("accuracy", self.accuracy)
+            
+        self.saver = tf.train.Saver()
+        
+        print("Creating a new model.")
+        sess.run(tf.global_variables_initializer())
+    
     def conv_net(self):
         #Reshape input image
         x_image = tf.reshape(self.x, shape=[-1, self.img_height, self.img_width, self.color_channels])
@@ -92,23 +120,23 @@ class Model:
     def train(self, sess, images, labels):
         step = 0
         while step * self.batch_size < len(images):
-            batch_x = images[step*self.batch_size:(step+1)*self.batch_size] #Take one image from every character
+            batch_x = images[step*self.batch_size:(step+1)*self.batch_size]
             batch_y = labels[step*self.batch_size:(step+1)*self.batch_size]
-            # Run optimization op (backprop)
+            # Run optimization
             sess.run(self.optimizer, feed_dict={self.x: batch_x, self.y: batch_y, self.keep_prob: self.dropout})
             if step % self.display_step == 0:
                     # Calculate batch loss and accuracy
                     loss, acc= sess.run([self.cost, self.accuracy], feed_dict={self.x: batch_x, self.y: batch_y, self.keep_prob: 1.})
 
                     # Save the variables to disk.
-                    save_path = self.saver.save(sess, "training/model", global_step=step)
+                    save_path = self.saver.save(sess, "training/model", global_step=self.global_step)
 
                     print("Checkpoint saved in file: %s" % save_path)
                     print("Iter " + str(step*self.batch_size) + ", Minibatch Loss= " + \
                               "{:.6f}".format(loss) + ", Training Accuracy= " + \
                               "{:.5f}".format(acc))
             step += 1
-        save_path = self.saver.save(sess, "training/model", global_step=step)
+        save_path = self.saver.save(sess, "training/model", global_step=self.global_step)
         print("Final checkpoint saved in file: %s" % save_path)
 
     def test(self, sess, images):
