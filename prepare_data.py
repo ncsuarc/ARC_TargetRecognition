@@ -8,10 +8,10 @@ def list_files(startpath):
         for root, dirs, files in os.walk(startpath):
                 return files #Lazy, I know.
 
-def prep_data():
+def prep_data(prefix="samples"):
         images = []
         labels = []
-        f = open("samples/imgpath_label.txt", 'r')
+        f = open(prefix+"/imgpath_label.txt", 'r')
         for line in f:
                 filename, label = line[:-1].split(' ')
                 image = cv2.imread(filename)
