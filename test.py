@@ -3,7 +3,7 @@ import cv2
 import prepare_data
 import model
 
-images, labels = prepare_data.prep_data("test_samples")
+images, labels = prepare_data.prep_data(prefix="test_samples")
 
 # Launch the graph
 cnn_model = model.Model('training', batch_size=500)
