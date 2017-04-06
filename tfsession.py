@@ -8,9 +8,6 @@ class TFSession:
             self.sess = tf.Session()
             atexit.register(self.close)
 
-        def __getattr__(self, name):
-            return getattr(self.sess, name)
-
         def close(self):
             print('Closing Tensorflow Session...')
             self.sess.close()
