@@ -1,0 +1,16 @@
+{
+	"img_height":60,
+	"img_width":60,
+	"color_channels":3,
+	"layers": [
+		{ "type":"conv", "shape":16 },
+		{ "type":"max_pool", "shape":2 },
+		{ "type":"conv", "shape":32 },
+		{ "type":"max_pool", "shape":2 },
+		{ "type":"conv", "shape":64 },
+		{ "type":"max_pool", "shape":3 },
+		{ "type":"conv", "shape":128 },
+		{ "type":"fc", "shape":2048, "dropout":true, "relu":true },
+		{ "type":"fc", "shape":13, "dropout":false, "relu":false }
+	]
+}
