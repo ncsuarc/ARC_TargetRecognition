@@ -36,9 +36,7 @@ pred_labels = cnn_model.test(images)
 correct = 0
 total = 0
 n = 0
-print(classes)
 for (img, pred_one_hot, actual) in zip(images, pred_labels, labels):
-    cv2.imshow("Display", img.reshape((60, 60, 3)))
     predicted = np.argmax(pred_one_hot)
     predicted = classes[predicted] 
     actual = classes[actual] 
@@ -46,8 +44,9 @@ for (img, pred_one_hot, actual) in zip(images, pred_labels, labels):
     if actual == predicted:
         correct = correct + 1
     else:
-        cv2.imwrite("bad%s.png" % n, img.reshape((60, 60, 3)))
+        if not os.path.isdir("incorrect"):
+            os.mkdir("incorrect")
+        cv2.imwrite(os.path.join("incorrect", "%s.png") % n, img.reshape((60, 60, 3)))
         n += 1
     print("actual:%s predicted:%s" % (actual, predicted))
     print('Percent Correct:%6.2f%%' % (correct/total * 100))
-    cv2.waitKey()

@@ -21,14 +21,13 @@ def create_network(save_location, json_location):
         image = tf.placeholder(tf.float32, [None, architecture.img_height * architecture.img_width * architecture.color_channels], name='image')
         tf.add_to_collection("image", image)
 
-        labels = tf.placeholder(tf.uint8, [None], name='labels')
-        tf.add_to_collection("labels", labels)
-
         global_step = tf.Variable(0, name='global_step', trainable=False) 
         tf.add_to_collection("step", global_step)
     
     predictor = conv_net(image, architecture)
+    softmax = tf.nn.softmax(predictor)
     tf.add_to_collection("predictor", predictor)
+    tf.add_to_collection("predictor", softmax)
 
     saver = tf.train.Saver()
     sess.run(tf.global_variables_initializer())
@@ -71,9 +70,8 @@ def conv_net(x, architecture):
                 print('Fully connected layer from %d neurons to %d neurons.' % (prev_s.shape, layer_s.shape))
                 weight = weight_variable([prev_s.shape, layer_s.shape])
                 bias   = bias_variable([layer_s.shape])
-
+                
                 # Reshape pooling output to fit fully connected layer input
-                #out_layer_flat = tf.reshape(layer, [-1, fc1_weight.get_shape().as_list()[0]])
                 layer = tf.add(tf.matmul(layer, weight), bias)
                 if layer_s.relu:
                     layer = tf.nn.relu(layer)
