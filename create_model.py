@@ -53,8 +53,8 @@ def conv_net(x, architecture):
         with tf.name_scope(layer_s.type + str(i)):
             if layer_s.type == 'conv':
                 layer = conv_layer(layer, prev_s.shape, layer_s.shape)
-                prev_s = layer_s
                 print('Convolving %d features to %d features.' % (prev_s.shape, layer_s.shape))
+                prev_s = layer_s
             elif layer_s.type == 'max_pool':
                 if (img_height % layer_s.shape != 0) or (img_width % layer_s.shape != 0):
                     raise ValueError('Invalid dimensions as input to pooling layer')

@@ -22,7 +22,7 @@ for subdir, i in zip(classes, range(len(classes))):
         if not (f.endswith('jpg') or f.endswith('png')):
             continue
         img = cv2.imread(os.path.join(args['input'], subdir, f))
-        img = cv2.resize(img, (60,60))
+        img = cv2.resize(img, (64,64))
         images.append(img.flatten())
         labels.append(i)
 
